@@ -4,9 +4,16 @@
  */
 package smm.project.pkg7;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.io.File;
+import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
+import sm.rlm.enums.HerramientaDibujo;
+
 /**
  *
- * @author rober
+ * @author rober 
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
 
@@ -15,6 +22,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      */
     public VentanaPrincipal() {
         initComponents();
+        this.jToggleButton1.setSelected(true);
+        this.lienzo2D1.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        this.jLabel1.setText(HerramientaDibujo.LINE.toString());
+        this.jLabel2.setText("Coordenadas: (0, 0)");
     }
 
     /**
@@ -40,8 +51,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jToggleButton7 = new javax.swing.JToggleButton();
         jToggleButton8 = new javax.swing.JToggleButton();
         jSlider1 = new javax.swing.JSlider();
+        jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        lienzo2D2 = new sm.rlm.iu.Lienzo2D();
+        jLabel2 = new javax.swing.JLabel();
+        lienzo2D1 = new sm.rlm.iu.Lienzo2D();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -52,9 +65,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jToolBar1.setRollover(true);
+        jToolBar1.setToolTipText("Barra de Herramientas");
 
         buttonGroup1.add(jToggleButton1);
         jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/linea.png"))); // NOI18N
+        jToggleButton1.setToolTipText("Linea");
         jToggleButton1.setFocusable(false);
         jToggleButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -67,30 +82,54 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         buttonGroup1.add(jToggleButton2);
         jToggleButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/rectangulo.png"))); // NOI18N
+        jToggleButton2.setToolTipText("Rectangulo");
         jToggleButton2.setFocusable(false);
         jToggleButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton2ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jToggleButton2);
 
         buttonGroup1.add(jToggleButton3);
         jToggleButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/elipse.png"))); // NOI18N
+        jToggleButton3.setToolTipText("Elipse");
         jToggleButton3.setFocusable(false);
         jToggleButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton3ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jToggleButton3);
 
         buttonGroup1.add(jToggleButton4);
         jToggleButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/curva.png"))); // NOI18N
+        jToggleButton4.setToolTipText("Curva");
         jToggleButton4.setFocusable(false);
         jToggleButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton4ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jToggleButton4);
 
         buttonGroup1.add(jToggleButton5);
         jToggleButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/seleccion.png"))); // NOI18N
+        jToggleButton5.setToolTipText("Mover");
         jToggleButton5.setFocusable(false);
         jToggleButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton5ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jToggleButton5);
         jToolBar1.add(jSeparator1);
 
@@ -100,58 +139,103 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel1.setLayout(new java.awt.BorderLayout());
 
         jButton1.setBackground(new java.awt.Color(0, 0, 0));
+        jButton1.setToolTipText("Color");
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setMaximumSize(new java.awt.Dimension(30, 30));
         jButton1.setMinimumSize(new java.awt.Dimension(30, 30));
         jButton1.setPreferredSize(new java.awt.Dimension(30, 30));
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton1, java.awt.BorderLayout.CENTER);
 
         jToolBar1.add(jPanel1);
 
         jToggleButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/rellenar.png"))); // NOI18N
+        jToggleButton6.setToolTipText("Rellenar");
         jToggleButton6.setFocusable(false);
         jToggleButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton6ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jToggleButton6);
 
         jToggleButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/transparencia.png"))); // NOI18N
+        jToggleButton7.setToolTipText("Transparencia");
         jToggleButton7.setFocusable(false);
         jToggleButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton7ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jToggleButton7);
 
         jToggleButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/alisar.png"))); // NOI18N
+        jToggleButton8.setToolTipText("Alisar");
         jToggleButton8.setFocusable(false);
         jToggleButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton8ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jToggleButton8);
 
         jSlider1.setMaximum(50);
+        jSlider1.setToolTipText("Grosor");
         jSlider1.setValue(5);
         jSlider1.setPreferredSize(new java.awt.Dimension(50, 20));
+        jSlider1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider1StateChanged(evt);
+            }
+        });
         jToolBar1.add(jSlider1);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel2.setToolTipText("Barra de Estado");
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
         jLabel1.setText("jLabel1");
-        jLabel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        getContentPane().add(jLabel1, java.awt.BorderLayout.PAGE_END);
+        jPanel2.add(jLabel1, java.awt.BorderLayout.WEST);
 
-        lienzo2D2.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("jLabel2");
+        jPanel2.add(jLabel2, java.awt.BorderLayout.EAST);
 
-        javax.swing.GroupLayout lienzo2D2Layout = new javax.swing.GroupLayout(lienzo2D2);
-        lienzo2D2.setLayout(lienzo2D2Layout);
-        lienzo2D2Layout.setHorizontalGroup(
-            lienzo2D2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
+
+        lienzo2D1.setBackground(new java.awt.Color(255, 255, 255));
+        lienzo2D1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                lienzo2D1MouseMoved(evt);
+            }
+        });
+
+        javax.swing.GroupLayout lienzo2D1Layout = new javax.swing.GroupLayout(lienzo2D1);
+        lienzo2D1.setLayout(lienzo2D1Layout);
+        lienzo2D1Layout.setHorizontalGroup(
+            lienzo2D1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 464, Short.MAX_VALUE)
         );
-        lienzo2D2Layout.setVerticalGroup(
-            lienzo2D2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        lienzo2D1Layout.setVerticalGroup(
+            lienzo2D1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 218, Short.MAX_VALUE)
         );
 
-        getContentPane().add(lienzo2D2, java.awt.BorderLayout.CENTER);
+        getContentPane().add(lienzo2D1, java.awt.BorderLayout.CENTER);
+
+        jMenuBar1.setToolTipText("Barra de Menu");
 
         jMenu1.setText("Archivo");
 
@@ -159,9 +243,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText("Abrir");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem2);
 
         jMenuItem3.setText("Guardar");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem3);
 
         jMenuBar1.add(jMenu1);
@@ -175,8 +269,82 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
-        // TODO add your handling code here:
+        this.lienzo2D1.setHerramienta(HerramientaDibujo.LINE);
+        this.jLabel1.setText(HerramientaDibujo.LINE.toString());
+        this.lienzo2D1.setMover(false);
+        this.lienzo2D1.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }//GEN-LAST:event_jToggleButton1ActionPerformed
+
+    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
+        this.lienzo2D1.setHerramienta(HerramientaDibujo.RECTANGLE);
+        this.jLabel1.setText(HerramientaDibujo.RECTANGLE.toString());
+        this.lienzo2D1.setMover(false);
+        this.lienzo2D1.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    }//GEN-LAST:event_jToggleButton2ActionPerformed
+
+    private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
+        this.lienzo2D1.setHerramienta(HerramientaDibujo.ELLIPSE);
+        this.jLabel1.setText(HerramientaDibujo.ELLIPSE.toString());
+        this.lienzo2D1.setMover(false);
+        this.lienzo2D1.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    }//GEN-LAST:event_jToggleButton3ActionPerformed
+
+    private void jToggleButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton4ActionPerformed
+        this.lienzo2D1.setHerramienta(HerramientaDibujo.QUADCURVE);
+        this.jLabel1.setText(HerramientaDibujo.QUADCURVE.toString());
+        this.lienzo2D1.setMover(false);
+        this.lienzo2D1.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    }//GEN-LAST:event_jToggleButton4ActionPerformed
+
+    private void jToggleButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton5ActionPerformed
+        this.lienzo2D1.setMover(this.jToggleButton5.isSelected());
+        this.jLabel1.setText("MOVING");
+        this.lienzo2D1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_jToggleButton5ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+         Color color = JColorChooser.showDialog(this, "Elije un color", Color.RED);
+         this.jButton1.setBackground(color);
+         this.lienzo2D1.setColor(color);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jToggleButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton6ActionPerformed
+        this.lienzo2D1.setRelleno(this.jToggleButton6.isSelected());
+    }//GEN-LAST:event_jToggleButton6ActionPerformed
+
+    private void jToggleButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton7ActionPerformed
+        this.lienzo2D1.setTransparente(this.jToggleButton7.isSelected());
+    }//GEN-LAST:event_jToggleButton7ActionPerformed
+
+    private void jToggleButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton8ActionPerformed
+        this.lienzo2D1.setAlisado(this.jToggleButton8.isSelected());
+    }//GEN-LAST:event_jToggleButton8ActionPerformed
+
+    private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
+        this.lienzo2D1.setGrosor(this.jSlider1.getValue());
+    }//GEN-LAST:event_jSlider1StateChanged
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        JFileChooser dlg = new JFileChooser();
+        int resp = dlg.showOpenDialog(this);
+        if( resp == JFileChooser.APPROVE_OPTION) {
+         File f = dlg.getSelectedFile();
+         //Código
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        JFileChooser dlg = new JFileChooser();
+        int resp = dlg.showSaveDialog(this);
+        if( resp == JFileChooser.APPROVE_OPTION) {
+         File f = dlg.getSelectedFile();
+         //Código
+        }
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void lienzo2D1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lienzo2D1MouseMoved
+        this.jLabel2.setText("Coordenadas: (" + evt.getX() + ", " + evt.getY() + ")");
+    }//GEN-LAST:event_lienzo2D1MouseMoved
 
     
 
@@ -184,6 +352,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -191,6 +360,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JToggleButton jToggleButton1;
@@ -202,6 +372,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JToggleButton jToggleButton7;
     private javax.swing.JToggleButton jToggleButton8;
     private javax.swing.JToolBar jToolBar1;
-    private sm.rlm.iu.Lienzo2D lienzo2D2;
+    private sm.rlm.iu.Lienzo2D lienzo2D1;
     // End of variables declaration//GEN-END:variables
 }
