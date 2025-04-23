@@ -40,6 +40,9 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="lienzo2D1MouseMoved"/>
+          </Events>
 
           <Layout>
             <DimensionLayout dim="0">

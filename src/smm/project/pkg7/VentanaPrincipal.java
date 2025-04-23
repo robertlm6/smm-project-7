@@ -34,16 +34,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     public VentanaPrincipal() {
         initComponents();
         mvi = new ManejadorVentanaInterna();
-        /*this.jToggleButton1.setSelected(true);
-        lienzo.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-        this.jLabel1.setText(HerramientaDibujo.LINE.toString());
-        this.jLabel2.setText("Coordenadas: (0, 0)");*/
+        this.jLabel1.setText("Barra de Estado");
+        this.jLabel2.setText("Coordenadas: (0, 0)");
     }
     
     private Lienzo2D getSelectedLienzo() {
         VentanaInterna vi;
         vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
         return vi != null ? vi.getLienzo2D() : null;
+    }
+    
+    protected void actualizarCoordenadas(int x, int y) {
+        this.jLabel2.setText("Coordenadas: (" + x + ", " + y + ")");
     }
     
     private void turnOffBooleans(Lienzo2D lienzo) {
@@ -75,6 +77,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jToggleButton10.setSelected(false);
         jButton1.setBackground(Color.BLACK);
         jSlider1.setValue(5);
+        jLabel1.setText(HerramientaDibujo.LINE.toString());
+        jLabel2.setText("Coordenadas: (0, 0)");
     }
     
     private class ManejadorVentanaInterna extends InternalFrameAdapter{
@@ -94,6 +98,23 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             jToggleButton10.setSelected(vi.getLienzo2D().getBorrar());
             jButton1.setBackground(vi.getLienzo2D().getColor());
             jSlider1.setValue(vi.getLienzo2D().getGrosor());
+            
+            if (jToggleButton1.isSelected()) {
+                jLabel1.setText(HerramientaDibujo.LINE.toString());
+            } else if (jToggleButton2.isSelected()) {
+                jLabel1.setText(HerramientaDibujo.RECTANGLE.toString());
+            } else if (jToggleButton3.isSelected()) {
+                jLabel1.setText(HerramientaDibujo.ELLIPSE.toString());
+            } else if (jToggleButton4.isSelected()) {
+                jLabel1.setText(HerramientaDibujo.QUADCURVE.toString());
+            } else if (jToggleButton5.isSelected()) {
+                jLabel1.setText("MOVING");
+            } else if (jToggleButton9.isSelected()) {
+                jLabel1.setText("RECORDING");
+            } else if (jToggleButton10.isSelected()) {
+                jLabel1.setText("DELETING");
+            }
+
         }
     }
 
@@ -310,6 +331,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
+        jDesktopPane1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jDesktopPane1MouseMoved(evt);
+            }
+        });
+
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
         jDesktopPane1Layout.setHorizontalGroup(
@@ -458,12 +485,22 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 File f = dlg.getSelectedFile();
                 BufferedImage img = ImageIO.read(f);
                 String formato = this.getExtension(f);
-                VentanaInterna vi = new VentanaInterna();
+                VentanaInterna vi = new VentanaInterna(this);
                 vi.getLienzo2D().setImg(img);
                 vi.setFormatoInicial(formato);
                 this.jDesktopPane1.add(vi);
                 vi.setTitle(f.getName());
+                
+                f = new File(getClass().getResource("/sonidos/fijar.wav").getFile());
+                vi.getLienzo2D().setSonidoFijar(f);
+                f = new File(getClass().getResource("/sonidos/eliminar.wav").getFile());
+                vi.getLienzo2D().setSonidoEliminar(f);
+
                 vi.setVisible(true);
+
+                vi.addInternalFrameListener(mvi);
+                this.initLienzoByDefault();
+                vi.getLienzo2D().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
                         "Error al abrir la imagen:\n" + ex.getMessage(),
@@ -543,9 +580,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             g2d.fillRect(0, 0, ancho, alto);
             g2d.dispose();
             
-            VentanaInterna vi = new VentanaInterna();
+            VentanaInterna vi = new VentanaInterna(this);
             jDesktopPane1.add(vi);
             vi.getLienzo2D().setImg(img);
+            
+            File f = new File(getClass().getResource("/sonidos/fijar.wav").getFile());
+            vi.getLienzo2D().setSonidoFijar(f);
+            f = new File(getClass().getResource("/sonidos/eliminar.wav").getFile());
+            vi.getLienzo2D().setSonidoEliminar(f);
             
             vi.pack();
             vi.setSize(ancho, alto);
@@ -553,6 +595,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             
             vi.addInternalFrameListener(mvi);
             this.initLienzoByDefault();
+            vi.getLienzo2D().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -575,6 +618,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             this.jLabel1.setText("DELETING");
         }
     }//GEN-LAST:event_jToggleButton10ActionPerformed
+
+    private void jDesktopPane1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jDesktopPane1MouseMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jDesktopPane1MouseMoved
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;

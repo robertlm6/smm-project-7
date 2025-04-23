@@ -13,12 +13,16 @@ import sm.rlm.iu.Lienzo2D;
 public class VentanaInterna extends javax.swing.JInternalFrame {
 
     private String formatoInicial;
+    private VentanaPrincipal vp;
     
     /**
      * Creates new form VentanaInterna
+     * @param vp
      */
-    public VentanaInterna() {
+    public VentanaInterna(VentanaPrincipal vp) {
         initComponents();
+        
+        this.vp = vp;
     }
     
     public Lienzo2D getLienzo2D() {
@@ -26,7 +30,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
     }
 
     public String getFormatoInicial() {
-        return formatoInicial;
+        return (formatoInicial == null) ? "jpg" : formatoInicial;
     }
 
     public void setFormatoInicial(String formatoInicial) {
@@ -53,6 +57,11 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
         setResizable(true);
 
         lienzo2D1.setBackground(new java.awt.Color(255, 255, 255));
+        lienzo2D1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                lienzo2D1MouseMoved(evt);
+            }
+        });
 
         javax.swing.GroupLayout lienzo2D1Layout = new javax.swing.GroupLayout(lienzo2D1);
         lienzo2D1.setLayout(lienzo2D1Layout);
@@ -71,6 +80,12 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void lienzo2D1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lienzo2D1MouseMoved
+        if (vp != null) {
+            vp.actualizarCoordenadas(evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_lienzo2D1MouseMoved
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
