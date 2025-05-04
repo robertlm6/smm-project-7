@@ -8,6 +8,11 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.awt.image.RescaleOp;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -17,7 +22,15 @@ import javax.swing.JOptionPane;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import sm.image.KernelProducer;
 import sm.rlm.enums.HerramientaDibujo;
+import sm.rlm.eventos.LienzoAdapter;
+import sm.rlm.eventos.LienzoEvent;
+import sm.rlm.graficos.MiElipse;
+import sm.rlm.graficos.MiRectangulo;
+import sm.rlm.graficos.MiShape;
+import sm.rlm.graficos.MiShapeRellenable;
+import sm.rlm.image.MiKernelProducer;
 import sm.rlm.iu.Lienzo2D;
 
 /**
@@ -27,6 +40,8 @@ import sm.rlm.iu.Lienzo2D;
 public class VentanaPrincipal extends javax.swing.JFrame {
 
     ManejadorVentanaInterna mvi;
+    ManejadorLienzo ml;
+    private BufferedImage imgFuente = null;
     
     /**
      * Creates new form VentanaPrincipal
@@ -34,6 +49,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     public VentanaPrincipal() {
         initComponents();
         mvi = new ManejadorVentanaInterna();
+        ml = new ManejadorLienzo();
         this.jLabel1.setText("Barra de Estado");
         this.jLabel2.setText("Coordenadas: (0, 0)");
     }
@@ -86,6 +102,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         @Override
         public void internalFrameActivated(InternalFrameEvent evt) {
             VentanaInterna vi = (VentanaInterna) evt.getInternalFrame();
+            vi.getLienzo2D().addLienzoListener(ml);
             jToggleButton1.setSelected(vi.getLienzo2D().getHerramienta().equals(HerramientaDibujo.LINE));
             jToggleButton2.setSelected(vi.getLienzo2D().getHerramienta().equals(HerramientaDibujo.RECTANGLE));
             jToggleButton3.setSelected(vi.getLienzo2D().getHerramienta().equals(HerramientaDibujo.ELLIPSE));
@@ -117,6 +134,35 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         }
     }
+    
+    private class ManejadorLienzo extends LienzoAdapter {
+        
+        @Override
+        public void shapeSelected(LienzoEvent evt) {
+            MiShape forma = evt.getForma();
+            
+            if (forma instanceof MiElipse || forma instanceof MiRectangulo) {
+                jToggleButton6.setSelected(((MiShapeRellenable) forma).getRellena());
+            } else {
+                jToggleButton6.setSelected(false);
+            }
+            jToggleButton7.setSelected(forma.getTransparente());
+            jToggleButton8.setSelected(forma.getAlisada());
+            jButton1.setBackground(forma.getColor());
+            jSlider1.setValue(forma.getGrosor());
+        }
+        
+        @Override
+        public void editingModeExited(LienzoEvent evt) {
+            Lienzo2D lienzo = (Lienzo2D) evt.getSource();
+            
+            jToggleButton6.setSelected(lienzo.getRelleno());
+            jToggleButton7.setSelected(lienzo.getTransparente());
+            jToggleButton8.setSelected(lienzo.getAlisado());
+            jButton1.setBackground(lienzo.getColor());
+            jSlider1.setValue(lienzo.getGrosor());
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -146,6 +192,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jToolBar2 = new javax.swing.JToolBar();
+        jLabel3 = new javax.swing.JLabel();
+        jSlider2 = new javax.swing.JSlider();
+        jLabel4 = new javax.swing.JLabel();
+        jSlider3 = new javax.swing.JSlider();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
+        jSlider4 = new javax.swing.JSlider();
+        jLabel6 = new javax.swing.JLabel();
+        jSlider5 = new javax.swing.JSlider();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -153,6 +211,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -329,13 +389,109 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jLabel2.setText("jLabel2");
         jPanel2.add(jLabel2, java.awt.BorderLayout.EAST);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
+        jToolBar2.setRollover(true);
 
-        jDesktopPane1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jDesktopPane1MouseMoved(evt);
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/brillo.png"))); // NOI18N
+        jToolBar2.add(jLabel3);
+
+        jSlider2.setMaximum(255);
+        jSlider2.setMinimum(-255);
+        jSlider2.setValue(0);
+        jSlider2.setPreferredSize(new java.awt.Dimension(100, 20));
+        jSlider2.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider2StateChanged(evt);
             }
         });
+        jSlider2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider2FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider2FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider2);
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/contraste.png"))); // NOI18N
+        jToolBar2.add(jLabel4);
+
+        jSlider3.setMaximum(20);
+        jSlider3.setMinimum(1);
+        jSlider3.setValue(10);
+        jSlider3.setPreferredSize(new java.awt.Dimension(100, 20));
+        jSlider3.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider3StateChanged(evt);
+            }
+        });
+        jSlider3.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider3FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider3FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider3);
+        jToolBar2.add(jSeparator2);
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Media", "Binomial", "Enfoque", "Relieve", "Fronteras", "Media 5x5", "Media 7x7" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jComboBox1);
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/emborronar.png"))); // NOI18N
+        jToolBar2.add(jLabel5);
+
+        jSlider4.setMaximum(31);
+        jSlider4.setMinimum(1);
+        jSlider4.setValue(1);
+        jSlider4.setPreferredSize(new java.awt.Dimension(100, 20));
+        jSlider4.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider4StateChanged(evt);
+            }
+        });
+        jSlider4.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider4FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider4FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider4);
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/perfilar.png"))); // NOI18N
+        jToolBar2.add(jLabel6);
+
+        jSlider5.setMaximum(15);
+        jSlider5.setMinimum(1);
+        jSlider5.setValue(1);
+        jSlider5.setPreferredSize(new java.awt.Dimension(100, 20));
+        jSlider5.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider5StateChanged(evt);
+            }
+        });
+        jSlider5.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider5FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider5FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider5);
+        jToolBar2.add(jSeparator3);
+
+        jPanel2.add(jToolBar2, java.awt.BorderLayout.NORTH);
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
@@ -345,7 +501,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 218, Short.MAX_VALUE)
+            .addGap(0, 192, Short.MAX_VALUE)
         );
 
         getContentPane().add(jDesktopPane1, java.awt.BorderLayout.CENTER);
@@ -380,7 +536,24 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Editar");
+        jMenu2.setText("Imagen");
+
+        jMenuItem4.setText("RescaleOp");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem4);
+
+        jMenuItem5.setText("ConvolveOp");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem5);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -496,9 +669,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 f = new File(getClass().getResource("/sonidos/eliminar.wav").getFile());
                 vi.getLienzo2D().setSonidoEliminar(f);
 
+                vi.setSize(img.getWidth(), img.getHeight());
                 vi.setVisible(true);
 
                 vi.addInternalFrameListener(mvi);
+                vi.getLienzo2D().addLienzoListener(ml);
                 this.initLienzoByDefault();
                 vi.getLienzo2D().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
             } catch (IOException ex) {
@@ -574,7 +749,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             int ancho = dialog.getAncho();
             int alto = dialog.getAlto();
             
-            BufferedImage img = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_RGB);
+            BufferedImage img = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = img.createGraphics();
             g2d.setColor(Color.WHITE);
             g2d.fillRect(0, 0, ancho, alto);
@@ -594,6 +769,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             vi.setVisible(true);
             
             vi.addInternalFrameListener(mvi);
+            vi.getLienzo2D().addLienzoListener(ml);
             this.initLienzoByDefault();
             vi.getLienzo2D().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         }
@@ -619,26 +795,220 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jToggleButton10ActionPerformed
 
-    private void jDesktopPane1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jDesktopPane1MouseMoved
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jDesktopPane1MouseMoved
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                try {
+                    RescaleOp rop = new RescaleOp(1.0F, 100.0F, null);
+                    rop.filter(img, img);
+                    vi.getLienzo2D().repaint();
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                try {
+                    float filtro[] = {0.1f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.1f};
+                    Kernel k = new Kernel(3, 3, filtro);
+                    ConvolveOp cop = new ConvolveOp(k);
+                    BufferedImage imgdest = cop.filter(img, null);
+                    vi.getLienzo2D().setImg(imgdest);
+                    vi.getLienzo2D().repaint();
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jSlider2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider2FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider2FocusGained
+
+    private void jSlider2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider2FocusLost
+        this.imgFuente = null;
+        jSlider2.setValue(0);
+    }//GEN-LAST:event_jSlider2FocusLost
+
+    private void jSlider2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider2StateChanged
+        if (imgFuente == null) {
+            return;
+        }
+
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null) {
+            RescaleOp rop = new RescaleOp(1.0f, jSlider2.getValue(), null);
+            rop.filter(imgFuente, vi.getLienzo2D().getImg());
+            vi.getLienzo2D().repaint();
+        }
+    }//GEN-LAST:event_jSlider2StateChanged
+
+    private void jSlider3FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider3FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider3FocusGained
+
+    private void jSlider3FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider3FocusLost
+        this.imgFuente = null;
+        jSlider3.setValue(10);
+    }//GEN-LAST:event_jSlider3FocusLost
+
+    private void jSlider3StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider3StateChanged
+        if (imgFuente == null) {
+            return;
+        }
+
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null) {
+            RescaleOp rop = new RescaleOp(jSlider3.getValue()/10.0f, 0.0f, null);
+            rop.filter(imgFuente, vi.getLienzo2D().getImg());
+            vi.getLienzo2D().repaint();
+        }
+    }//GEN-LAST:event_jSlider3StateChanged
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                String option = (String) jComboBox1.getSelectedItem();
+                Kernel kernel = null;
+                
+                switch(option) {
+                    case "Media":
+                        kernel = KernelProducer.createKernel(KernelProducer.TYPE_MEDIA_3x3);
+                        break;
+                    case "Binomial":
+                        kernel = KernelProducer.createKernel(KernelProducer.TYPE_BINOMIAL_3x3);
+                        break;
+                    case "Enfoque":
+                        kernel = KernelProducer.createKernel(KernelProducer.TYPE_ENFOQUE_3x3);
+                        break;
+                    case "Relieve":
+                        kernel = KernelProducer.createKernel(KernelProducer.TYPE_RELIEVE_3x3);
+                        break;
+                    case "Fronteras":
+                        kernel = KernelProducer.createKernel(KernelProducer.TYPE_LAPLACIANA_3x3);
+                        break;
+                    case "Media 5x5":
+                        kernel = MiKernelProducer.createKernel(MiKernelProducer.TYPE_MEDIA_5x5);
+                        break;
+                    case "Media 7x7":
+                        kernel = MiKernelProducer.createKernel(MiKernelProducer.TYPE_MEDIA_7x7);
+                        break;
+                }
+                
+                if (kernel != null) {
+                    ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+                    BufferedImage imgdest = cop.filter(img, null);
+                    vi.getLienzo2D().setImg(imgdest);
+                    vi.getLienzo2D().repaint();
+                }
+            }
+        }
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jSlider4FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider4FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider4FocusGained
+
+    private void jSlider4FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider4FocusLost
+        this.imgFuente = null;
+        jSlider4.setValue(1);
+    }//GEN-LAST:event_jSlider4FocusLost
+
+    private void jSlider4StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider4StateChanged
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null && imgFuente != null) {
+            Kernel kernel = MiKernelProducer.createKernelMedia(jSlider4.getValue());
+            ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+            BufferedImage imgdest = cop.filter(imgFuente, null);
+            vi.getLienzo2D().setImg(imgdest);
+            vi.getLienzo2D().repaint();
+        }
+    }//GEN-LAST:event_jSlider4StateChanged
+
+    private void jSlider5FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider5FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider5FocusGained
+
+    private void jSlider5FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider5FocusLost
+        this.imgFuente = null;
+        jSlider5.setValue(1);
+    }//GEN-LAST:event_jSlider5FocusLost
+
+    private void jSlider5StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider5StateChanged
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null && imgFuente != null) {
+            Kernel kernel = MiKernelProducer.createKernelPerfilado(jSlider5.getValue());
+            ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+            BufferedImage imgdest = cop.filter(imgFuente, null);
+            vi.getLienzo2D().setImg(imgdest);
+            vi.getLienzo2D().repaint();
+        }
+    }//GEN-LAST:event_jSlider5StateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JSlider jSlider1;
+    private javax.swing.JSlider jSlider2;
+    private javax.swing.JSlider jSlider3;
+    private javax.swing.JSlider jSlider4;
+    private javax.swing.JSlider jSlider5;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton10;
     private javax.swing.JToggleButton jToggleButton2;
@@ -650,5 +1020,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JToggleButton jToggleButton8;
     private javax.swing.JToggleButton jToggleButton9;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
     // End of variables declaration//GEN-END:variables
 }
