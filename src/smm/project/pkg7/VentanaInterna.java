@@ -17,6 +17,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
     
     /**
      * Creates new form VentanaInterna
+     *
      * @param vp
      */
     public VentanaInterna(VentanaPrincipal vp) {
@@ -84,6 +85,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
     private void lienzo2D1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lienzo2D1MouseMoved
         if (vp != null) {
             vp.actualizarCoordenadas(evt.getX(), evt.getY());
+            vp.actualizarRgb(this.lienzo2D1.getR(), this.lienzo2D1.getG(), this.lienzo2D1.getB());
         }
     }//GEN-LAST:event_lienzo2D1MouseMoved
 

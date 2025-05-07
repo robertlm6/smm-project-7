@@ -7,9 +7,15 @@ package smm.project.pkg7;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
+import java.awt.image.BandCombineOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
 import java.awt.image.ConvolveOp;
+import java.awt.image.DataBuffer;
 import java.awt.image.Kernel;
 import java.awt.image.RescaleOp;
 import java.awt.image.WritableRaster;
@@ -23,6 +29,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import sm.image.KernelProducer;
+import sm.image.color.GreyColorSpace;
 import sm.rlm.enums.HerramientaDibujo;
 import sm.rlm.eventos.LienzoAdapter;
 import sm.rlm.eventos.LienzoEvent;
@@ -51,7 +58,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         mvi = new ManejadorVentanaInterna();
         ml = new ManejadorLienzo();
         this.jLabel1.setText("Barra de Estado");
-        this.jLabel2.setText("Coordenadas: (0, 0)");
+        this.jLabel2.setText("Coordenadas: (0, 0)   RGB Pixel: (0, 0, 0)");
     }
     
     private Lienzo2D getSelectedLienzo() {
@@ -62,6 +69,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     
     protected void actualizarCoordenadas(int x, int y) {
         this.jLabel2.setText("Coordenadas: (" + x + ", " + y + ")");
+    }
+    
+    protected void actualizarRgb(int r, int g, int b) {
+        String text = this.jLabel2.getText() + "   RGB Pixel: (" + r + "," + g + "," + b + ")";
+        this.jLabel2.setText(text);
     }
     
     private void turnOffBooleans(Lienzo2D lienzo) {
@@ -94,7 +106,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jButton1.setBackground(Color.BLACK);
         jSlider1.setValue(5);
         jLabel1.setText(HerramientaDibujo.LINE.toString());
-        jLabel2.setText("Coordenadas: (0, 0)");
+        jLabel2.setText("Coordenadas: (0, 0)   RGB Pixel: (0, 0, 0)");
     }
     
     private class ManejadorVentanaInterna extends InternalFrameAdapter{
@@ -204,6 +216,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jSlider5 = new javax.swing.JSlider();
         jSeparator3 = new javax.swing.JToolBar.Separator();
+        jButton3 = new javax.swing.JButton();
+        jComboBox2 = new javax.swing.JComboBox<>();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
+        jButton2 = new javax.swing.JButton();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -213,6 +229,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -436,7 +454,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jToolBar2.add(jSlider3);
         jToolBar2.add(jSeparator2);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Media", "Binomial", "Enfoque", "Relieve", "Fronteras", "Media 5x5", "Media 7x7" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Media", "Binomial", "Enfoque", "Relieve", "Fronteras", "Media 5x5", "Media 7x7", "Sobel Horizontal", "Sobel Vertical" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -489,6 +507,37 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jToolBar2.add(jSlider5);
         jToolBar2.add(jSeparator3);
 
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/bandas.png"))); // NOI18N
+        jButton3.setFocusable(false);
+        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton3);
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "RGB", "YCC", "GREY" }));
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jComboBox2);
+        jToolBar2.add(jSeparator4);
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/combinar.png"))); // NOI18N
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton2);
+
         jPanel2.add(jToolBar2, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
@@ -501,7 +550,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 192, Short.MAX_VALUE)
+            .addGap(0, 182, Short.MAX_VALUE)
         );
 
         getContentPane().add(jDesktopPane1, java.awt.BorderLayout.CENTER);
@@ -553,6 +602,22 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItem5);
+
+        jMenuItem6.setText("BandCombineOp");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem6);
+
+        jMenuItem7.setText("ColorConvertOp");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem7);
 
         jMenuBar1.add(jMenu2);
 
@@ -854,7 +919,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         if (vi != null) {
             RescaleOp rop = new RescaleOp(1.0f, jSlider2.getValue(), null);
             rop.filter(imgFuente, vi.getLienzo2D().getImg());
-            vi.getLienzo2D().repaint();
+            jDesktopPane1.repaint();
         }
     }//GEN-LAST:event_jSlider2StateChanged
 
@@ -891,30 +956,35 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         if (vi != null) {
             BufferedImage img = vi.getLienzo2D().getImg();
             if (img != null) {
-                String option = (String) jComboBox1.getSelectedItem();
                 Kernel kernel = null;
                 
-                switch(option) {
-                    case "Media":
+                switch(jComboBox1.getSelectedIndex()) {
+                    case 0:
                         kernel = KernelProducer.createKernel(KernelProducer.TYPE_MEDIA_3x3);
                         break;
-                    case "Binomial":
+                    case 1:
                         kernel = KernelProducer.createKernel(KernelProducer.TYPE_BINOMIAL_3x3);
                         break;
-                    case "Enfoque":
+                    case 2:
                         kernel = KernelProducer.createKernel(KernelProducer.TYPE_ENFOQUE_3x3);
                         break;
-                    case "Relieve":
+                    case 3:
                         kernel = KernelProducer.createKernel(KernelProducer.TYPE_RELIEVE_3x3);
                         break;
-                    case "Fronteras":
+                    case 4:
                         kernel = KernelProducer.createKernel(KernelProducer.TYPE_LAPLACIANA_3x3);
                         break;
-                    case "Media 5x5":
+                    case 5:
                         kernel = MiKernelProducer.createKernel(MiKernelProducer.TYPE_MEDIA_5x5);
                         break;
-                    case "Media 7x7":
+                    case 6:
                         kernel = MiKernelProducer.createKernel(MiKernelProducer.TYPE_MEDIA_7x7);
+                        break;
+                    case 7:
+                        kernel = KernelProducer.createKernel(KernelProducer.TYPE_SOBELX_3x3);
+                        break;
+                    case 8:
+                        kernel = KernelProducer.createKernel(KernelProducer.TYPE_SOBELY_3x3);
                         break;
                 }
                 
@@ -980,10 +1050,145 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jSlider5StateChanged
 
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                try {
+                    float[][] matriz = {{1.0F, 0.0F, 0.0F},
+                                        {0.0F, 0.0F, 1.0F},
+                                        {0.0F, 1.0F, 0.0F}};
+                    BandCombineOp bcop = new BandCombineOp(matriz, null);
+                    bcop.filter(img.getRaster(), img.getRaster());
+                    vi.getLienzo2D().repaint();
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                try {
+                    ColorSpace cs = new GreyColorSpace();
+                    ColorConvertOp op = new ColorConvertOp(cs, null);
+                    BufferedImage imgdest = op.filter(img, null);
+                    vi.getLienzo2D().setImg(imgdest);
+                    vi.getLienzo2D().repaint();
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                try {
+                    float[][] matriz = {{0.0F, 0.5F, 0.5F},
+                                        {0.5F, 0.0F, 0.5F},
+                                        {0.5F, 0.5F, 0.0F}};
+                    BandCombineOp bcop = new BandCombineOp(matriz, null);
+                    bcop.filter(img.getRaster(), img.getRaster());
+                    vi.getLienzo2D().repaint();
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                
+                for(int i = 0; i < img.getRaster().getNumBands(); i++) {
+                    BufferedImage imgBanda = getImageBand(img, i);
+                    vi = new VentanaInterna(this);
+                    vi.getLienzo2D().setImg(imgBanda);
+                    vi.setTitle("[" + i + "]");
+                    jDesktopPane1.add(vi);
+                    vi.setVisible(true);
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                ColorSpace cs = null;
+                ColorSpace imgCs = img.getColorModel().getColorSpace();
+                vi = new VentanaInterna(this);
+                switch(jComboBox2.getSelectedIndex()) {
+                    case 0:
+                        cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+                        vi.setTitle("[sRGB]");
+                        break;
+                    case 1:
+                        cs = ColorSpace.getInstance(ColorSpace.CS_PYCC);
+                        vi.setTitle("[YCC]");
+                        break;
+                    case 2:
+                        cs = new GreyColorSpace();
+                        vi.setTitle("[GREY]");
+                        break;
+                }
+                
+                if (cs.getType() == imgCs.getType() && (!(cs instanceof GreyColorSpace) || 
+                        (cs instanceof GreyColorSpace && imgCs instanceof GreyColorSpace))) {
+                    System.out.println("La imagen ya está en el espacio de color seleccionado.");
+                } else {
+                    try {
+                        ColorConvertOp op = new ColorConvertOp(cs, null);
+                        BufferedImage imgOut = op.filter(img, null);
+
+                        vi.getLienzo2D().setImg(imgOut);
+                        jDesktopPane1.add(vi);
+                        vi.setVisible(true);
+                    } catch (IllegalArgumentException e) {
+                        System.err.println(e.getLocalizedMessage());
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_jComboBox2ActionPerformed
+
+    private BufferedImage getImageBand(BufferedImage img, int banda) {
+        //Creamos el modelo de color de la nueva imagen basado en un espcio de color GRAY
+        ColorSpace cs = new GreyColorSpace();
+        ComponentColorModel cm = new ComponentColorModel(cs, false, false,
+                                                         Transparency.OPAQUE,
+                                                         DataBuffer.TYPE_BYTE);
+        
+        //Creamos el nuevo raster a partir del raster de la imagen original
+        int vband[] = {banda};
+        WritableRaster bRaster = (WritableRaster) img.getRaster().createWritableChild(0, 0,
+                img.getWidth(), img.getHeight(), 0, 0, vband);
+        
+        //Creamos una nueva imagen que contiene como raster el correspondiente a la banda
+        return new BufferedImage(cm, bRaster, false, null);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -999,11 +1204,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JSlider jSlider2;
     private javax.swing.JSlider jSlider3;
