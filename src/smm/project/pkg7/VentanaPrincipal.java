@@ -36,6 +36,8 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import sm.image.KernelProducer;
 import sm.image.LookupTableProducer;
+import sm.image.SepiaOp;
+import sm.image.TintOp;
 import sm.image.color.GreyColorSpace;
 import sm.iu.DialogoFuncionABC;
 import sm.rlm.enums.HerramientaDibujo;
@@ -47,6 +49,10 @@ import sm.rlm.graficos.MiShape;
 import sm.rlm.graficos.MiShapeRellenable;
 import sm.rlm.image.MiKernelProducer;
 import sm.rlm.image.MiLookupTableProducer;
+import sm.rlm.image.ModificarTonoOp;
+import sm.rlm.image.PopArtOp;
+import sm.rlm.image.PosterizarOp;
+import sm.rlm.image.RojoOp;
 import sm.rlm.iu.Lienzo2D;
 
 /**
@@ -72,6 +78,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         this.jSlider6.setEnabled(false);
         this.jSlider7.setEnabled(false);
         this.jSlider8.setEnabled(false);
+        this.jSlider10.setEnabled(false);
+        this.jSlider11.setEnabled(false);
     }
     
     private Lienzo2D getSelectedLienzo() {
@@ -248,6 +256,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jComboBox2 = new javax.swing.JComboBox<>();
         jSeparator4 = new javax.swing.JToolBar.Separator();
         jButton2 = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        jSlider12 = new javax.swing.JSlider();
+        jButton12 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jSlider13 = new javax.swing.JSlider();
+        jLabel7 = new javax.swing.JLabel();
+        jSlider9 = new javax.swing.JSlider();
+        jToggleButton12 = new javax.swing.JToggleButton();
+        jSlider10 = new javax.swing.JSlider();
+        jSlider11 = new javax.swing.JSlider();
+        jLabel10 = new javax.swing.JLabel();
+        jSlider14 = new javax.swing.JSlider();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -623,7 +643,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton11);
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Negativo", "Sepia" }));
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Negativo", "Sepia Lookup", "Invertir Oscuros", "Invertir Claros" }));
         jComboBox3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox3ActionPerformed(evt);
@@ -697,6 +717,132 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton2);
 
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/tintar.png"))); // NOI18N
+        jToolBar2.add(jLabel8);
+
+        jSlider12.setValue(0);
+        jSlider12.setPreferredSize(new java.awt.Dimension(50, 20));
+        jSlider12.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider12StateChanged(evt);
+            }
+        });
+        jSlider12.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider12FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider12FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider12);
+
+        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/sepia.png"))); // NOI18N
+        jButton12.setFocusable(false);
+        jButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton12);
+
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/rojo.png"))); // NOI18N
+        jToolBar2.add(jLabel9);
+
+        jSlider13.setMaximum(255);
+        jSlider13.setValue(0);
+        jSlider13.setPreferredSize(new java.awt.Dimension(50, 20));
+        jSlider13.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider13StateChanged(evt);
+            }
+        });
+        jSlider13.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider13FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider13FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider13);
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/posterizar.png"))); // NOI18N
+        jToolBar2.add(jLabel7);
+
+        jSlider9.setMaximum(20);
+        jSlider9.setMinimum(2);
+        jSlider9.setValue(2);
+        jSlider9.setPreferredSize(new java.awt.Dimension(50, 20));
+        jSlider9.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider9StateChanged(evt);
+            }
+        });
+        jSlider9.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider9FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider9FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider9);
+
+        jToggleButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/paleta.png"))); // NOI18N
+        jToggleButton12.setFocusable(false);
+        jToggleButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton12ActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jToggleButton12);
+
+        jSlider10.setMaximum(180);
+        jSlider10.setValue(0);
+        jSlider10.setPreferredSize(new java.awt.Dimension(50, 20));
+        jSlider10.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider10StateChanged(evt);
+            }
+        });
+        jToolBar2.add(jSlider10);
+
+        jSlider11.setMaximum(360);
+        jSlider11.setValue(0);
+        jSlider11.setPreferredSize(new java.awt.Dimension(50, 20));
+        jSlider11.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider11StateChanged(evt);
+            }
+        });
+        jToolBar2.add(jSlider11);
+
+        jLabel10.setText("PopArt");
+        jToolBar2.add(jLabel10);
+
+        jSlider14.setMaximum(255);
+        jSlider14.setValue(128);
+        jSlider14.setPreferredSize(new java.awt.Dimension(50, 20));
+        jSlider14.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider14StateChanged(evt);
+            }
+        });
+        jSlider14.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jSlider14FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jSlider14FocusLost(evt);
+            }
+        });
+        jToolBar2.add(jSlider14);
+
         jPanel2.add(jToolBar2, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
@@ -705,7 +851,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jDesktopPane1.setLayout(jDesktopPane1Layout);
         jDesktopPane1Layout.setHorizontalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 880, Short.MAX_VALUE)
+            .addGap(0, 1400, Short.MAX_VALUE)
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1507,9 +1653,161 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             case 1:
                 tabla = MiLookupTableProducer.createSepiaTable();
                 break;
+            case 2:
+                tabla = MiLookupTableProducer.crearTablaABC(255, 128, 255);
+                break;
+            case 3:
+                tabla = MiLookupTableProducer.crearTablaABC(0, 128, 0);
+                break;
         }
         this.aplicarLookup(tabla);
     }//GEN-LAST:event_jComboBox3ActionPerformed
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            BufferedImage img = vi.getLienzo2D().getImg();
+            if (img != null) {
+                try {
+                    SepiaOp sepia = new SepiaOp();
+                    sepia.filter(img, img);
+                    vi.getLienzo2D().repaint();
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void jSlider9FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider9FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider9FocusGained
+
+    private void jSlider9FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider9FocusLost
+        this.imgFuente = null;
+        jSlider9.setValue(2);
+    }//GEN-LAST:event_jSlider9FocusLost
+
+    private void jSlider9StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider9StateChanged
+        if (imgFuente == null) {
+            return;
+        }
+
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null) {
+            PosterizarOp pop = new PosterizarOp(this.jSlider9.getValue());
+            pop.filter(imgFuente, vi.getLienzo2D().getImg());
+            vi.getLienzo2D().repaint();
+        }
+    }//GEN-LAST:event_jSlider9StateChanged
+
+    private void jToggleButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton12ActionPerformed
+        this.jSlider10.setEnabled(this.jToggleButton12.isSelected());
+        this.jSlider11.setEnabled(this.jToggleButton12.isSelected());
+        
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null) {
+            if (this.jToggleButton12.isSelected()) {
+                this.imgFuente = vi.getLienzo2D().getImg();
+
+                this.actualizarCambioTono();
+            } else {
+                this.imgFuente = null;
+                this.jSlider10.setValue(0);
+                this.jSlider11.setValue(0);
+            }
+        }
+    }//GEN-LAST:event_jToggleButton12ActionPerformed
+
+    private void jSlider10StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider10StateChanged
+        if (this.jToggleButton12.isSelected()) {
+            this.actualizarCambioTono();
+        }
+    }//GEN-LAST:event_jSlider10StateChanged
+
+    private void jSlider11StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider11StateChanged
+        if (this.jToggleButton12.isSelected()) {
+            this.actualizarCambioTono();
+        }
+    }//GEN-LAST:event_jSlider11StateChanged
+
+    private void jSlider12StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider12StateChanged
+        if (imgFuente == null) {
+            return;
+        }
+
+        VentanaInterna vi = (VentanaInterna) jDesktopPane1.getSelectedFrame();
+        if (vi != null) {
+            Color color = this.jButton1.getBackground();
+            float gradoMezcla = this.jSlider12.getValue() / 100.0f;
+            TintOp tintado = new TintOp(color, gradoMezcla);
+            tintado.filter(imgFuente, vi.getLienzo2D().getImg());
+            vi.getLienzo2D().repaint();
+        }
+    }//GEN-LAST:event_jSlider12StateChanged
+
+    private void jSlider12FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider12FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider12FocusGained
+
+    private void jSlider12FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider12FocusLost
+        this.imgFuente = null;
+        jSlider12.setValue(0);
+    }//GEN-LAST:event_jSlider12FocusLost
+
+    private void jSlider13FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider13FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider13FocusGained
+
+    private void jSlider13StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider13StateChanged
+        if (imgFuente != null) {
+            this.actualizarRojo();
+        }
+    }//GEN-LAST:event_jSlider13StateChanged
+
+    private void jSlider13FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider13FocusLost
+        this.imgFuente = null;
+        jSlider13.setValue(0);
+    }//GEN-LAST:event_jSlider13FocusLost
+
+    private void jSlider14FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider14FocusGained
+        VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+        if (vi != null) {
+            ColorModel cm = vi.getLienzo2D().getImg().getColorModel();
+            WritableRaster raster = vi.getLienzo2D().getImg().copyData(null);
+            boolean alfaPre = vi.getLienzo2D().getImg().isAlphaPremultiplied();
+            imgFuente = new BufferedImage(cm, raster, alfaPre, null);
+        }
+    }//GEN-LAST:event_jSlider14FocusGained
+
+    private void jSlider14FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSlider14FocusLost
+        this.imgFuente = null;
+        jSlider14.setValue(128);
+    }//GEN-LAST:event_jSlider14FocusLost
+
+    private void jSlider14StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider14StateChanged
+        if (imgFuente != null) {
+            this.actualizarPopArt();
+        }
+    }//GEN-LAST:event_jSlider14StateChanged
 
     private BufferedImage getImageBand(BufferedImage img, int banda) {
         //Creamos el modelo de color de la nueva imagen basado en un espcio de color GRAY
@@ -1606,10 +1904,72 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }
     
+    private void actualizarCambioTono() {
+        if (this.imgFuente != null) {
+            Color color = this.jButton1.getBackground();
+            int umbral = this.jSlider10.getValue();
+            int desplazamientoTono = this.jSlider11.getValue();
+            
+            VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+            if (vi != null) {
+                BufferedImage copia = new BufferedImage(
+                        this.imgFuente.getColorModel(),
+                        this.imgFuente.copyData(null),
+                        this.imgFuente.isAlphaPremultiplied(), null
+                );
+                ModificarTonoOp mtop = new ModificarTonoOp(color, umbral, desplazamientoTono);
+                mtop.filter(copia, copia);
+                vi.getLienzo2D().setImg(copia);
+                vi.getLienzo2D().repaint();
+            }
+        }
+    }
+    
+    private void actualizarRojo() {
+        if (this.imgFuente != null) {
+            int umbral = this.jSlider13.getValue();
+            
+            VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+            if (vi != null) {
+                BufferedImage copia = new BufferedImage(
+                        this.imgFuente.getColorModel(),
+                        this.imgFuente.copyData(null),
+                        this.imgFuente.isAlphaPremultiplied(), null
+                );
+                RojoOp rop = new RojoOp(umbral);
+                rop.filter(copia, copia);
+                vi.getLienzo2D().setImg(copia);
+                vi.getLienzo2D().repaint();
+            }
+        }
+    }
+    
+    private void actualizarPopArt() {
+        if (this.imgFuente != null) {
+            int umbral = this.jSlider14.getValue();
+            Color claro = Color.PINK;
+            Color oscuro = Color.BLUE;
+            
+            VentanaInterna vi = (VentanaInterna) (jDesktopPane1.getSelectedFrame());
+            if (vi != null) {
+                BufferedImage copia = new BufferedImage(
+                        this.imgFuente.getColorModel(),
+                        this.imgFuente.copyData(null),
+                        this.imgFuente.isAlphaPremultiplied(), null
+                );
+                PopArtOp paop = new PopArtOp(umbral, claro, oscuro);
+                paop.filter(copia, copia);
+                vi.getLienzo2D().setImg(copia);
+                vi.getLienzo2D().repaint();
+            }
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -1623,11 +1983,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -1651,6 +2015,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JToolBar.Separator jSeparator6;
     private javax.swing.JToolBar.Separator jSeparator7;
     private javax.swing.JSlider jSlider1;
+    private javax.swing.JSlider jSlider10;
+    private javax.swing.JSlider jSlider11;
+    private javax.swing.JSlider jSlider12;
+    private javax.swing.JSlider jSlider13;
+    private javax.swing.JSlider jSlider14;
     private javax.swing.JSlider jSlider2;
     private javax.swing.JSlider jSlider3;
     private javax.swing.JSlider jSlider4;
@@ -1658,9 +2027,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JSlider jSlider6;
     private javax.swing.JSlider jSlider7;
     private javax.swing.JSlider jSlider8;
+    private javax.swing.JSlider jSlider9;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton10;
     private javax.swing.JToggleButton jToggleButton11;
+    private javax.swing.JToggleButton jToggleButton12;
     private javax.swing.JToggleButton jToggleButton2;
     private javax.swing.JToggleButton jToggleButton3;
     private javax.swing.JToggleButton jToggleButton4;
