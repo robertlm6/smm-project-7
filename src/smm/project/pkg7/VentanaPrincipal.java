@@ -27,7 +27,13 @@ import java.awt.image.RescaleOp;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
+import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -54,6 +60,8 @@ import sm.rlm.image.PopArtOp;
 import sm.rlm.image.PosterizarOp;
 import sm.rlm.image.RojoOp;
 import sm.rlm.iu.Lienzo2D;
+import sm.sound.SMClipPlayer;
+import sm.sound.SMSoundRecorder;
 
 /**
  *
@@ -65,6 +73,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     ManejadorLienzo ml;
     private DialogoFuncionABC funcionABC = null;
     private BufferedImage imgFuente = null;
+    SMClipPlayer player = null;
+    SMSoundRecorder recorder = null;
+    File tempFile = null;
     
     /**
      * Creates new form VentanaPrincipal
@@ -196,6 +207,48 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             jSlider1.setValue(lienzo.getGrosor());
         }
     }
+    
+    enum AudioAction { PLAY, RECORD }
+    private AudioAction selectedAction = null;
+    
+    enum PlayerStatus { STOP, PLAY, PAUSE }
+    private PlayerStatus playerStatus = PlayerStatus.STOP;
+    
+    ImageIcon iconoPlay = new ImageIcon(getClass().getResource("/iconos/play.png"));
+    ImageIcon iconoPause = new ImageIcon(getClass().getResource("/iconos/pausa.png"));
+
+    
+    class ManejadorAudio implements LineListener {
+
+        @Override
+        public void update(LineEvent event) {
+            if (event.getType() == LineEvent.Type.START) {
+                switch(selectedAction) {
+                    case PLAY -> {}
+                    case RECORD -> {
+                        jButton14.setEnabled(false);
+                    }
+                }
+            }
+            if (event.getType() == LineEvent.Type.STOP) {
+                switch (selectedAction) {
+                    case PLAY -> {
+                        Clip clip = player.getClip();
+                        if (player != null && clip.getMicrosecondPosition() >= clip.getMicrosecondLength()) {
+                            jButton13.doClick();
+                            playerStatus = PlayerStatus.STOP;
+                            jButton10.setIcon(iconoPlay);
+                        }
+                    }
+                    case RECORD -> {
+                        jButton14.setEnabled(true);
+                    }
+                }
+            }
+            if (event.getType() == LineEvent.Type.CLOSE) {
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -223,6 +276,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jToggleButton7 = new javax.swing.JToggleButton();
         jToggleButton8 = new javax.swing.JToggleButton();
         jSlider1 = new javax.swing.JSlider();
+        jSeparator8 = new javax.swing.JToolBar.Separator();
+        jButton10 = new javax.swing.JButton();
+        jButton13 = new javax.swing.JButton();
+        jComboBox4 = new javax.swing.JComboBox<>();
+        jButton14 = new javax.swing.JButton();
+        jButton15 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -445,6 +504,54 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jSlider1);
+        jToolBar1.add(jSeparator8);
+
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/play.png"))); // NOI18N
+        jButton10.setFocusable(false);
+        jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton10);
+
+        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/stop.png"))); // NOI18N
+        jButton13.setFocusable(false);
+        jButton13.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton13ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton13);
+
+        jComboBox4.setPreferredSize(new java.awt.Dimension(100, 22));
+        jToolBar1.add(jComboBox4);
+
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/record.png"))); // NOI18N
+        jButton14.setFocusable(false);
+        jButton14.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton14ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton14);
+
+        jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/stopRecord.png"))); // NOI18N
+        jButton15.setFocusable(false);
+        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton15ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton15);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
@@ -1044,37 +1151,59 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         
         FileNameExtensionFilter filtroImg = new FileNameExtensionFilter("Imagenes "
                 + "(.jpg, .png, .gif)", "jpg", "png", "gif");
+        FileNameExtensionFilter filtroAudio = new FileNameExtensionFilter("Audios "
+                + "(.mp3, .wav, .au)", "mp3", "wav", "au");
         dlg.setFileFilter(filtroImg);
+        dlg.setFileFilter(filtroAudio);
         
         int resp = dlg.showOpenDialog(this);
         if (resp == JFileChooser.APPROVE_OPTION) {
-            try {
-                File f = dlg.getSelectedFile();
-                BufferedImage img = ImageIO.read(f);
-                String formato = this.getExtension(f);
-                VentanaInterna vi = new VentanaInterna(this);
-                vi.getLienzo2D().setImg(img);
-                vi.setFormatoInicial(formato);
-                this.jDesktopPane1.add(vi);
-                vi.setTitle(f.getName());
-                
-                f = new File(getClass().getResource("/sonidos/fijar.wav").getFile());
-                vi.getLienzo2D().setSonidoFijar(f);
-                f = new File(getClass().getResource("/sonidos/eliminar.wav").getFile());
-                vi.getLienzo2D().setSonidoEliminar(f);
+            File f = dlg.getSelectedFile();
+            String extension = this.getExtension(f).toLowerCase();
 
-                vi.setSize(img.getWidth(), img.getHeight());
-                vi.setVisible(true);
+            if (extension.equals("jpg") || extension.equals("png") || extension.equals("gif")) {
+                try {
+                    BufferedImage img = ImageIO.read(f);
+                    String formato = this.getExtension(f);
+                    VentanaInterna vi = new VentanaInterna(this);
+                    vi.getLienzo2D().setImg(img);
+                    vi.setFormatoInicial(formato);
+                    this.jDesktopPane1.add(vi);
+                    vi.setTitle(f.getName());
 
-                vi.addInternalFrameListener(mvi);
-                vi.getLienzo2D().addLienzoListener(ml);
-                this.initLienzoByDefault();
-                vi.getLienzo2D().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-            } catch (IOException ex) {
+                    f = new File(getClass().getResource("/sonidos/fijar.wav").getFile());
+                    vi.getLienzo2D().setSonidoFijar(f);
+                    f = new File(getClass().getResource("/sonidos/eliminar.wav").getFile());
+                    vi.getLienzo2D().setSonidoEliminar(f);
+
+                    vi.setSize(img.getWidth(), img.getHeight());
+                    vi.setVisible(true);
+
+                    vi.addInternalFrameListener(mvi);
+                    vi.getLienzo2D().addLienzoListener(ml);
+                    this.initLienzoByDefault();
+                    vi.getLienzo2D().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this,
+                            "Error al abrir la imagen:\n" + ex.getMessage(),
+                            "Error al abrir archivo",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } else if (extension.equals("mp3") || extension.equals("wav") || extension.equals("au")) {
+                File audioFile = new File(f.getAbsolutePath()) {
+                    @Override
+                    public String toString() {
+                        return this.getName();
+                    }
+                };
+
+                this.jComboBox4.addItem(audioFile);
+                this.jComboBox4.setSelectedItem(audioFile);
+            } else {
                 JOptionPane.showMessageDialog(this,
-                        "Error al abrir la imagen:\n" + ex.getMessage(),
-                        "Error al abrir archivo",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Formato no soportado",
+                        "Archivo no válido",
+                        JOptionPane.WARNING_MESSAGE);
             }
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
@@ -1809,6 +1938,106 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jSlider14StateChanged
 
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        File f = (File) this.jComboBox4.getSelectedItem();
+        if (f != null) {
+            if (player == null && (this.playerStatus == PlayerStatus.STOP)) {
+                player = new SMClipPlayer(f);
+                player.addLineListener(new ManejadorAudio());
+            }
+
+            this.selectedAction = AudioAction.PLAY;
+            switch (this.playerStatus) {
+                case STOP -> {
+                    player.play();
+                    this.playerStatus = PlayerStatus.PLAY;
+                    jButton10.setIcon(this.iconoPause);
+                }
+                case PAUSE -> {
+                    player.resume();
+                    this.playerStatus = PlayerStatus.PLAY;
+                    jButton10.setIcon(this.iconoPause);
+                }
+                case PLAY -> {
+                    player.pause();
+                    this.playerStatus = PlayerStatus.PAUSE;
+                    jButton10.setIcon(this.iconoPlay);
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        if (player != null) {
+            player.stop();
+            player = null;
+            this.playerStatus = PlayerStatus.STOP;
+            jButton10.setIcon(iconoPlay);
+        }
+    }//GEN-LAST:event_jButton13ActionPerformed
+
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        try {
+            tempFile = File.createTempFile("temp_record", ".mp3");
+            tempFile.deleteOnExit();
+            
+            recorder = new SMSoundRecorder(tempFile);
+            if (recorder != null) {
+                recorder.addLineListener(new ManejadorAudio());
+                this.selectedAction = AudioAction.RECORD;
+                recorder.record();
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                            "Error al iniciar la grabación:\n" + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
+        if (recorder != null) {
+            recorder.stop();
+            recorder = null;
+
+            JFileChooser dlg = new JFileChooser();
+            FileNameExtensionFilter filtroMp3 = new FileNameExtensionFilter("MP3 (*.mp3)", "mp3");
+            FileNameExtensionFilter filtroWav = new FileNameExtensionFilter("WAV (*.mp3)", "mp3");
+            FileNameExtensionFilter filtroAu = new FileNameExtensionFilter("AU (*.au)", "au");
+
+            dlg.addChoosableFileFilter(filtroMp3);
+            dlg.addChoosableFileFilter(filtroWav);
+            dlg.addChoosableFileFilter(filtroAu);
+
+            int resp = dlg.showSaveDialog(this);
+            if (resp == JFileChooser.APPROVE_OPTION) {
+                File destino = dlg.getSelectedFile();
+
+                if (!destino.getName().toLowerCase().endsWith(".mp3")) {
+                    destino = new File(destino.getAbsolutePath() + ".mp3");
+                }
+
+                try {
+                    Files.copy(tempFile.toPath(), destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                    File finalFile = new File(destino.getAbsolutePath()) {
+                        @Override
+                        public String toString() {
+                            return this.getName();
+                        }
+                    };
+                    this.jComboBox4.addItem(finalFile);
+                    this.jComboBox4.setSelectedItem(finalFile);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this,
+                            "Error al guardar el archivo:\n" + ex.getMessage(),
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton15ActionPerformed
+
     private BufferedImage getImageBand(BufferedImage img, int banda) {
         //Creamos el modelo de color de la nueva imagen basado en un espcio de color GRAY
         ColorSpace cs = new GreyColorSpace();
@@ -1968,8 +2197,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton14;
+    private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -1981,6 +2214,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JComboBox<File> jComboBox4;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -2014,6 +2248,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JToolBar.Separator jSeparator6;
     private javax.swing.JToolBar.Separator jSeparator7;
+    private javax.swing.JToolBar.Separator jSeparator8;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JSlider jSlider10;
     private javax.swing.JSlider jSlider11;
